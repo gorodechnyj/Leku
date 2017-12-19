@@ -42,7 +42,7 @@
       android:minWidth="296dp"
       android:background="@drawable/toolbar_custom_background"
       tools:visibility="gone"
-      tools:ignore="UnusedAttribute"
+      tools:ignore="UnusedAttribute,elevation"
       />
 
   <LinearLayout

@@ -1,144 +1,140 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:orientation="vertical"
-    >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-  <fragment android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/map"
-            tools:context="com.schibstedspain.leku.LocationPickerActivity"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-      />
+    <fragment
+        android:id="@id/leku_map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.schibstedspain.leku.LocationPickerActivity" />
 
-  <ProgressBar
-      android:id="@+id/loading_progress_bar"
-      style="@android:style/Widget.ProgressBar.Small"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="top|start"
-      android:gravity="top|start"
-      android:layout_marginTop="80dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginLeft="8dp"
-      android:visibility="gone"
-      />
-
-  <ListView
-      android:id="@+id/resultlist"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="72dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginLeft="8dp"
-      android:layout_marginEnd="8dp"
-      android:layout_marginRight="8dp"
-      android:fadingEdgeLength="16dp"
-      android:footerDividersEnabled="true"
-      android:headerDividersEnabled="true"
-      android:elevation="2dp"
-      android:minWidth="296dp"
-      android:background="@drawable/toolbar_custom_background"
-      tools:visibility="gone"
-      tools:ignore="UnusedAttribute"
-      />
-
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:paddingBottom="@dimen/information_bottom_margin"
-      android:orientation="vertical"
-      android:layout_gravity="bottom|end"
-      android:animateLayoutChanges="true"
-      >
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnSatellite"
+    <ProgressBar
+        android:id="@id/leku_loading_progress_bar"
+        style="@android:style/Widget.ProgressBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        app:srcCompat="@drawable/ic_satellite_on"
-        app:fabSize="normal"
-        android:tint="?colorPrimary"
-        app:backgroundTint="@color/white"
-        app:rippleColor="@color/soft_grey"
-        app:elevation="2dp"
-        tools:background="@color/white"
-        />
+        android:layout_gravity="top|start"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="80dp"
+        android:gravity="top|start"
+        android:visibility="gone" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btnFloatingAction"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@id/leku_suggestions_search_result"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_gps_lime"
-        app:fabSize="normal"
-        android:tint="?colorPrimary"
-        app:backgroundTint="@color/white"
-        app:rippleColor="@color/soft_grey"
-        app:elevation="2dp"
-        tools:background="@color/white"
-        tools:ignore="elevation"
-        />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/toolbar_custom_background"
+        android:elevation="2dp"
+        android:fadingEdgeLength="16dp"
+        android:footerDividersEnabled="true"
+        android:headerDividersEnabled="true"
+        android:minWidth="296dp"
+        tools:ignore="UnusedAttribute"
+        tools:visibility="gone" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:paddingBottom="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:id="@+id/location_info"
-        android:visibility="gone"
-        tools:visibility="visible"
-        >
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="bottom|end"
-          android:background="@drawable/adress_custom_background"
-          android:orientation="horizontal"
-          tools:ignore="UselessParent"
-          >
-
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            >
-
-          <include layout="@layout/layout_coordinates" />
-          <include layout="@layout/layout_address" />
-
-        </LinearLayout>
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/information_bottom_margin">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnAccept"
+            android:id="@id/leku_control_satellite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:src="@drawable/ic_check_light"
-            app:fabSize="normal"
-            app:backgroundTint="?colorPrimary"
-            app:rippleColor="?colorPrimaryDark"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:tint="?colorPrimary"
+            app:backgroundTint="@color/white"
             app:elevation="2dp"
-            tools:background="?colorPrimary"
-            tools:ignore="elevation"
-            />
+            app:fabSize="normal"
+            app:rippleColor="@color/soft_grey"
+            app:srcCompat="@drawable/ic_satellite_on"
+            tools:background="@color/white" />
 
-      </LinearLayout>
-    </FrameLayout>
-  </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@id/leku_control_user_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:src="@drawable/ic_gps_lime"
+            android:tint="?colorPrimary"
+            app:backgroundTint="@color/white"
+            app:elevation="2dp"
+            app:fabSize="normal"
+            app:rippleColor="@color/soft_grey"
+            tools:background="@color/white"
+            tools:ignore="elevation" />
 
-  <include layout="@layout/toolbar_search" />
-</merge>
+        <FrameLayout
+            android:id="@id/leku_location_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:paddingBottom="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@drawable/adress_custom_background"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@id/leku_address_primary_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/coordinates"
+                    android:textColor="@color/strong_grey"
+                    android:textSize="18sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@id/leku_address_secondary_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/mid_grey"
+                    android:textSize="14sp"
+                    tools:text="15.184845, 4.1518484" />
+
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@id/leku_control_accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:src="@drawable/ic_check_light"
+                app:backgroundTint="?colorPrimary"
+                app:elevation="2dp"
+                app:fabSize="normal"
+                app:rippleColor="?colorPrimaryDark"
+                tools:background="?colorPrimary"
+                tools:ignore="elevation" />
+
+        </FrameLayout>
+    </LinearLayout>
+
+    <include layout="@layout/toolbar_search" />
+</FrameLayout>

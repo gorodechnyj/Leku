@@ -14,12 +14,15 @@ import android.support.test.rule.GrantPermissionRule;
 import android.util.Log;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+
 import com.schibstedspain.leku.LocationPickerActivity;
 import com.schibstedspain.leku.R;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
 import util.PermissionGranter;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -177,10 +180,10 @@ public class LocationPickerActivityShould {
   private void launchActivity() {
     Context targetContext = getInstrumentation().getTargetContext();
     Intent intent = new Intent(targetContext, LocationPickerActivity.class);
-    intent.putExtra(LocationPickerActivity.LATITUDE, 41.4036299);
-    intent.putExtra(LocationPickerActivity.LONGITUDE, 2.1743558);
-    intent.putExtra(LocationPickerActivity.LAYOUTS_TO_HIDE, "street");
-    intent.putExtra(LocationPickerActivity.SEARCH_ZONE, "es_ES");
+      intent.putExtra(LocationPickerActivity.ARG_LATITUDE, 41.4036299);
+      intent.putExtra(LocationPickerActivity.ARG_LONGITUDE, 2.1743558);
+      intent.putExtra(LocationPickerActivity.ARG_LAYOUTS_TO_HIDE, "street");
+      intent.putExtra(LocationPickerActivity.ARG_SEARCH_ZONE, "es_ES");
     intent.putExtra("test", "this is a test");
     activityRule.launchActivity(intent);
 

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map_search_toolbar"
+    android:id="@id/leku_map_search_toolbar"
     android:layout_height="?attr/actionBarSize"
     android:layout_width="match_parent"
     android:layout_marginTop="@dimen/gap"
@@ -17,7 +17,7 @@
     >
 
   <LinearLayout
-      android:id="@+id/leku_search_touch_zone"
+      android:id="@id/leku_search_touch_zone"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
@@ -25,7 +25,7 @@
       >
 
     <EditText
-        android:id="@+id/leku_search"
+        android:id="@id/leku_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
@@ -37,7 +37,7 @@
         />
 
     <ImageView
-        android:id="@+id/leku_clear_search_image"
+        android:id="@id/leku_control_clear"
         android:layout_width="24dp"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_clean"

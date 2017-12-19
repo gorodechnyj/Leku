@@ -12,8 +12,6 @@ public interface GeocoderViewInterface {
 
   void showLocations(List<Address> addresses);
 
-  void showDebouncedLocations(List<Address> addresses);
-
   void didLoadLocation();
 
   void showLoadLocationError();
@@ -39,11 +37,6 @@ public interface GeocoderViewInterface {
 
     @Override
     public void showLocations(List<Address> addresses) {
-
-    }
-
-    @Override
-    public void showDebouncedLocations(List<Address> addresses) {
 
     }
 

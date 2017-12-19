@@ -9,7 +9,7 @@
     android:layout_marginLeft="16dp"
     >
     <TextView
-        android:id="@+id/street"
+        android:id="@id/leku_street"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -20,7 +20,7 @@
         />
 
     <TextView
-        android:id="@+id/city"
+        android:id="@id/leku_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -30,7 +30,7 @@
         />
 
     <TextView
-        android:id="@+id/zipCode"
+        android:id="@id/leku_zipCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"

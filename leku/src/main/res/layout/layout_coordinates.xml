@@ -9,7 +9,7 @@
     android:layout_marginLeft="16dp"
     >
     <TextView
-        android:id="@+id/coordinates"
+        android:id="@id/leku_label_coordinates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -20,7 +20,7 @@
         />
 
     <TextView
-        android:id="@+id/latitude"
+        android:id="@id/leku_latitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/mid_grey"
@@ -29,7 +29,7 @@
         />
 
     <TextView
-        android:id="@+id/longitude"
+        android:id="@id/leku_longitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/mid_grey"

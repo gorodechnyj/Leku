@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="leku_loading_progress_bar" type="id" />
+    <item name="leku_suggestions_search_result" type="id" />
+    <item name="leku_control_satellite" type="id" />
+    <item name="leku_control_user_location" type="id" />
+    <item name="leku_location_info" type="id" />
+    <item name="leku_control_accept" type="id" />
+    <item name="leku_control_clear" type="id" />
+    <item name="leku_map" type="id" />
+    <item name="leku_search_touch_zone" type="id" />
+    <item name="leku_search" type="id" />
+    <item name="leku_map_search_toolbar" type="id" />
+    <item name="leku_label_coordinates" type="id" />
+    <item name="leku_latitude" type="id" />
+    <item name="leku_longitude" type="id" />
+    <item name="leku_street" type="id" />
+    <item name="leku_city" type="id" />
+    <item name="leku_zipCode" type="id" />
+    <item name="leku_address_primary_line" type="id" />
+    <item name="leku_address_secondary_line" type="id" />
+    <item name="leku_voice_search" type="id" />
+</resources>
