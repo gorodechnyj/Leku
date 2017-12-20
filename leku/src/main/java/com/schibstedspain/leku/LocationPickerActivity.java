@@ -663,14 +663,26 @@ public class LocationPickerActivity extends AppCompatActivity
     }
 
     private Marker addMarker(LatLng latLng) {
-        return map.addMarker(new MarkerOptions().position(latLng).draggable(true));
+        return map.addMarker(getPickerMarker(latLng));
     }
 
     private Marker addPoiMarker(LatLng latLng, String title, String address) {
-        return map.addMarker(new MarkerOptions().position(latLng)
+        return map.addMarker(getPoiMarker(latLng, title, address));
+    }
+
+    public MarkerOptions getPickerMarker(LatLng point) {
+        return new MarkerOptions()
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .position(point)
+                .draggable(true);
+    }
+
+    public MarkerOptions getPoiMarker(LatLng point, String title, String address) {
+        return new MarkerOptions()
+                .position(point)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .title(title)
-                .snippet(address));
+                .snippet(address);
     }
 
     private void setNewLocation(Address address) {
