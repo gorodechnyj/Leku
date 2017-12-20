@@ -20,4 +20,9 @@
     <item name="leku_address_primary_line" type="id" />
     <item name="leku_address_secondary_line" type="id" />
     <item name="leku_voice_search" type="id" />
+    <item name="leku_radius_container" type="id" />
+    <item name="leku_radius" type="id" />
+    <item name="leku_selected_radius_value" type="id" />
+    <item name="leku_lowest_radius" type="id" />
+    <item name="leku_greatest_radius" type="id" />
 </resources>

@@ -14,4 +14,6 @@
   <string name="longitude">Longitude</string>
   <string name="latitude">Latitude</string>
   <string name="coordinates">Coordinates</string>
+    <string name="radius_value">%1$s m</string>
+    <string name="radius_selected_value">Action radius %1$s m</string>
 </resources>

@@ -14,6 +14,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -34,6 +35,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
 
+    private static final int DEFAULT_RADIUS = 200;
+
     // external dependencies
     private final LocationPickerActivity activity;
     private final LocationPickerContracts.View viewCallbacks;
@@ -47,6 +50,10 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
     private RecyclerView rvSearchResults;
     private ImageView btnClearSearch, btnVoiceSearch;
     private FloatingActionButton btnMyLocation, btnAcceptLocation;
+
+    private ViewGroup layoutRadius;
+    private SeekBar sbRadius;
+    private TextView tvSelectedRadiusValue, tvLowestRadius, tvGreatestRadius;
 
     private Address selectedAddress;
 
@@ -125,6 +132,12 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         btnMyLocation = activity.findViewById(R.id.leku_control_user_location);
         btnAcceptLocation = activity.findViewById(R.id.leku_control_accept);
         rvSearchResults = activity.findViewById(R.id.leku_suggestions_search_result);
+        sbRadius = activity.findViewById(R.id.leku_radius);
+        layoutRadius = activity.findViewById(R.id.leku_radius_container);
+        tvSelectedRadiusValue = activity.findViewById(R.id.leku_selected_radius_value);
+        tvLowestRadius = activity.findViewById(R.id.leku_lowest_radius);
+        tvGreatestRadius = activity.findViewById(R.id.leku_greatest_radius);
+
         Toolbar toolbar = activity.findViewById(R.id.leku_map_search_toolbar);
         activity.setSupportActionBar(toolbar);
         if (activity.getSupportActionBar() != null) {
@@ -148,6 +161,71 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
                 activity.getSupportActionBar().setTitle(title);
             }
         }
+    }
+
+    public int getRadius() {
+        if (layoutRadius != null
+                && layoutRadius.getVisibility() == View.VISIBLE) {
+            int[] radiuses = this.activity.getResources().getIntArray(R.array.radiuses);
+            return radiuses[sbRadius.getProgress()];
+        } else {
+            return 0;
+        }
+    }
+
+    public void setRadius(int radius) {
+        if (layoutRadius != null) {
+            if (radius == 0) {
+                layoutRadius.setVisibility(View.GONE);
+            } else {
+                layoutRadius.setVisibility(View.VISIBLE);
+                int[] radiusValues = this.activity.getResources().getIntArray(R.array.radiuses);
+                int correctedValue = radiusValues[getSeekBarPosition(radius, radiusValues)];
+                sbRadius.setMax(radiusValues.length - 1);
+                tvLowestRadius.setText(activity.getString(R.string.radius_value, radiusValues[0]));
+                tvGreatestRadius.setText(activity.getString(R.string.radius_value, radiusValues[radiusValues.length - 1]));
+                tvSelectedRadiusValue.setText(activity.getString(R.string.radius_selected_value, correctedValue));
+                viewCallbacks.onRadiusChanged(correctedValue);
+
+                sbRadius.setProgress(getSeekBarPosition(radius, radiusValues));
+                sbRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        int correctedValue = radiusValues[progress];
+                        tvSelectedRadiusValue.setText(activity.getString(R.string.radius_selected_value, correctedValue));
+                        viewCallbacks.onRadiusChanged(correctedValue);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
+            }
+        }
+    }
+
+    private int getSeekBarPosition(int meters, int[] distances) {
+        int position = -1;
+        for (int i = 0; i < distances.length - 1; i++) {
+            int lowerDistance = distances[i];
+            int greaterDistance = distances[i + 1];
+            if (meters <= lowerDistance) {
+                position = i;
+                break;
+            } else if (meters > lowerDistance
+                    && meters <= greaterDistance) {
+                position = i + 1;
+                break;
+            }
+        }
+        if (position == -1) {
+            position = distances.length - 1;
+        }
+        return position;
     }
 
     public void setSearchProgressVisible(boolean visible) {

@@ -2,4 +2,5 @@
 <resources>
   <dimen name="information_bottom_margin">24dp</dimen>
   <dimen name="gap">8dp</dimen>
+  <dimen name="map_marker_circle_stroke_width">1dp</dimen>
 </resources>

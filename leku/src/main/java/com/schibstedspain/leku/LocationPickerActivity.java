@@ -2,9 +2,9 @@ package com.schibstedspain.leku;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -30,6 +30,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -74,8 +76,8 @@ public class LocationPickerActivity extends AppCompatActivity
     public static final String ARG_POIS_LIST = "pois_list";
     public static final String ARG_GEOLOC_API_KEY = "geoloc_api_key";
     public static final String ARG_TITLE = "ARG_TITLE";
+    public static final String ARG_RADIUS = "ARG_RADIUS";
 
-    public static final String ZIPCODE = "zipcode";
     public static final String ADDRESS = "address";
     public static final String LOCATION_ADDRESS = "location_address";
     public static final String TRANSITION_BUNDLE = "transition_bundle";
@@ -84,11 +86,11 @@ public class LocationPickerActivity extends AppCompatActivity
     private static final String LOCATION_KEY = "location_key";
     private static final String LAST_LOCATION_QUERY = "last_location_query";
 
-
     private static final int DEFAULT_ZOOM = 17;
     private static final int WIDER_ZOOM = 6;
 
     private GoogleMap map;
+    private Circle radiusCircle;
     private GoogleApiClient googleApiClient;
     private Location currentLocation;
     private LekuPoi currentLekuPoi;
@@ -107,7 +109,6 @@ public class LocationPickerActivity extends AppCompatActivity
     private Map<String, LekuPoi> lekuPoisMarkersMap;
     private Marker currentMarker;
     private GoogleGeocoderDataSource apiInteractor;
-    private String title;
 
     private ViewModel viewModel;
     private LocationPickerContracts.Interactor interactor;
@@ -269,6 +270,10 @@ public class LocationPickerActivity extends AppCompatActivity
                 setCurrentPositionLocation(currentLocation);
             }
             setPois();
+            if (radiusCircle == null
+                    && viewModel.getRadius() != 0) {
+                onRadiusChanged(viewModel.getRadius());
+            }
         }
     }
 
@@ -488,6 +493,7 @@ public class LocationPickerActivity extends AppCompatActivity
         if (transitionBundle.keySet().contains(ARG_TITLE)) {
             viewModel.setTitle(transitionBundle.getString(ARG_TITLE));
         }
+        viewModel.setRadius(transitionBundle.getInt(ARG_RADIUS));
     }
 
     private void setLocationFromBundle(double latitude, double longitude) {
@@ -564,12 +570,14 @@ public class LocationPickerActivity extends AppCompatActivity
             }
             returnIntent.putExtra(TRANSITION_BUNDLE, bundle.getBundle(TRANSITION_BUNDLE));
             returnIntent.putExtra(LEKU_POI, currentLekuPoi);
+            returnIntent.putExtra(ARG_RADIUS, viewModel.getRadius());
             setResult(RESULT_OK, returnIntent);
             track(TrackEvents.RESULT_OK);
         } else if (currentLocation != null) {
             Intent returnIntent = new Intent();
             returnIntent.putExtra(ARG_LATITUDE, currentLocation.getLatitude());
             returnIntent.putExtra(ARG_LONGITUDE, currentLocation.getLongitude());
+            returnIntent.putExtra(ARG_RADIUS, viewModel.getRadius());
             if (!TextUtils.isEmpty(addressString)) {
                 returnIntent.putExtra(LOCATION_ADDRESS, addressString);
             }
@@ -722,6 +730,26 @@ public class LocationPickerActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRadiusChanged(int radius) {
+        if (this.map != null && this.currentLocation != null) {
+            if (radiusCircle != null) {
+                radiusCircle.remove();
+                radiusCircle = null;
+            }
+            radiusCircle = this.map.addCircle(getRadiusCircle(GeoConverter.toLatLng(currentLocation), radius));
+        }
+    }
+
+    public CircleOptions getRadiusCircle(LatLng center, int radius) {
+        return new CircleOptions()
+                .center(center)
+                .radius(radius)
+                .fillColor(Color.argb(51, 255, 0, 0))
+                .strokeWidth(getResources().getDimensionPixelSize(R.dimen.map_marker_circle_stroke_width))
+                .strokeColor(Color.argb(51, 255, 0, 0));
+    }
+
+    @Override
     public GoogleMap getMap() {
         return map;
     }
@@ -735,6 +763,7 @@ public class LocationPickerActivity extends AppCompatActivity
         private List<LekuPoi> lekuPois;
         private String geolocApiKey = null;
         private String title = null;
+        private int radius = 0;
 
         public Builder() {
         }
@@ -773,7 +802,17 @@ public class LocationPickerActivity extends AppCompatActivity
             return this;
         }
 
-        public Intent build(Context context) {
+        public Builder withRadius(int radius) {
+            this.radius = radius;
+            return this;
+        }
+
+        public Builder withTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Intent build() {
             Intent intent = new Intent("com.schibstedspain.leku.PICK_LOCATION");
 
             if (locationLatitude != null) {
@@ -795,13 +834,11 @@ public class LocationPickerActivity extends AppCompatActivity
             if (title != null) {
                 intent.putExtra(ARG_TITLE, this.title);
             }
+            if (radius != 0) {
+                intent.putExtra(ARG_RADIUS, this.radius);
+            }
 
             return intent;
-        }
-
-        public Builder withTitle(String title) {
-            this.title = title;
-            return this;
         }
     }
 }

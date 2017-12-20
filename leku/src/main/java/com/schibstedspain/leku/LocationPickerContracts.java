@@ -65,6 +65,8 @@ public interface LocationPickerContracts {
 
         void hideSearchResult();
 
+        void onRadiusChanged(int radius);
+
         GoogleMap getMap();
     }
 }
