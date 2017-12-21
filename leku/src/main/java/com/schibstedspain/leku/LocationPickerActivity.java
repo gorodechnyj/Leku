@@ -737,7 +737,17 @@ public class LocationPickerActivity extends AppCompatActivity
                 radiusCircle = null;
             }
             radiusCircle = this.map.addCircle(getRadiusCircle(GeoConverter.toLatLng(currentLocation), radius));
+
+            changeZoom(radius);
         }
+    }
+
+    private void changeZoom(int radius) {
+        CameraPosition cameraPosition =
+                new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                        .zoom(viewModel.getZoomForMap(radius))
+                        .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public CircleOptions getRadiusCircle(LatLng center, int radius) {
