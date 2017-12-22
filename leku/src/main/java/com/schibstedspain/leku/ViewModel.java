@@ -350,15 +350,27 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         this.selectedAddress = selectedAddress;
     }
 
-    public int getZoomForMap(int radius) {
-        if (radius <= 100) {
-            return 17;
+    public float getZoomForMap(int radius) {
+        if (radius <= 30) {
+            return 17.5f;
+        } else if (radius <= 50) {
+            return 17f;
+        } else if (radius <= 100) {
+            return 16.7f;
+        } else if (radius <= 150) {
+            return 16.2f;
         } else if (radius <= 200) {
-            return 16;
+            return 15.7f;
+        } else if (radius <= 250) {
+            return 15.2f;
+        } else if (radius <= 300) {
+            return 15f;
         } else if (radius <= 350) {
-            return 15;
+            return 14.8f;
+        } else if (radius <= 500) {
+            return 14.3f;
         } else {
-            return 14;
+            return 13.8f;
         }
     }
 }
