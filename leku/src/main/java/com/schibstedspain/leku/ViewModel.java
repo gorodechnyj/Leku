@@ -166,8 +166,7 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
     public int getRadius() {
         if (layoutRadius != null
                 && layoutRadius.getVisibility() == View.VISIBLE) {
-            int[] radiuses = this.activity.getResources().getIntArray(R.array.radiuses);
-            return radiuses[sbRadius.getProgress()];
+            return sbRadius.getProgress() + 30;
         } else {
             return 0;
         }
@@ -178,21 +177,29 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
             if (radius == 0) {
                 layoutRadius.setVisibility(View.GONE);
             } else {
+                int correctedValue;
+                if (radius < 30) {
+                    correctedValue = 30;
+                } else if (radius > 700) {
+                    correctedValue = 700;
+                } else {
+                    correctedValue = radius;
+                }
+
                 layoutRadius.setVisibility(View.VISIBLE);
-                int[] radiusValues = this.activity.getResources().getIntArray(R.array.radiuses);
-                int correctedValue = radiusValues[getSeekBarPosition(radius, radiusValues)];
-                sbRadius.setMax(radiusValues.length - 1);
-                tvLowestRadius.setText(activity.getString(R.string.radius_value, radiusValues[0]));
-                tvGreatestRadius.setText(activity.getString(R.string.radius_value, radiusValues[radiusValues.length - 1]));
-                tvSelectedRadiusValue.setText(activity.getString(R.string.radius_selected_value, correctedValue));
+
+                sbRadius.setMax(670);
+                tvLowestRadius.setText("30");
+                tvGreatestRadius.setText("700");
+                tvSelectedRadiusValue.setText("" + correctedValue);
                 viewCallbacks.onRadiusChanged(correctedValue);
 
-                sbRadius.setProgress(getSeekBarPosition(radius, radiusValues));
+                sbRadius.setProgress(getSeekBarPosition(radius));
                 sbRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        int correctedValue = radiusValues[progress];
-                        tvSelectedRadiusValue.setText(activity.getString(R.string.radius_selected_value, correctedValue));
+                        int correctedValue = progress + 30;
+                        tvSelectedRadiusValue.setText("" + correctedValue);
                         viewCallbacks.onRadiusChanged(correctedValue);
                     }
 
@@ -208,22 +215,14 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         }
     }
 
-    private int getSeekBarPosition(int meters, int[] distances) {
-        int position = -1;
-        for (int i = 0; i < distances.length - 1; i++) {
-            int lowerDistance = distances[i];
-            int greaterDistance = distances[i + 1];
-            if (meters <= lowerDistance) {
-                position = i;
-                break;
-            } else if (meters > lowerDistance
-                    && meters <= greaterDistance) {
-                position = i + 1;
-                break;
-            }
-        }
-        if (position == -1) {
-            position = distances.length - 1;
+    private int getSeekBarPosition(int meters) {
+        int position;
+        if (meters < 30) {
+            position = 0;
+        } else if (meters > 700) {
+            position = 669;
+        } else {
+            position = meters - 30;
         }
         return position;
     }
