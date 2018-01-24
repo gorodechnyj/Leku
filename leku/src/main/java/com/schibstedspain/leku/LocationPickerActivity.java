@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ObjectsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import io.reactivex.disposables.CompositeDisposable;
 import pl.charmas.android.reactivelocation2.ReactiveLocationProvider;
@@ -64,9 +66,9 @@ public class LocationPickerActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnCameraMoveListener,
         GeocoderViewInterface,
-        GoogleMap.OnMapClickListener,
         LocationPickerContracts.View {
 
     public static final String ARG_LATITUDE = "latitude";
@@ -107,7 +109,6 @@ public class LocationPickerActivity extends AppCompatActivity
     private String searchZone;
     private List<LekuPoi> poisList;
     private Map<String, LekuPoi> lekuPoisMarkersMap;
-    private Marker currentMarker;
     private GoogleGeocoderDataSource apiInteractor;
 
     private ViewModel viewModel;
@@ -344,17 +345,27 @@ public class LocationPickerActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapLongClick(LatLng latLng) {
+    public void onCameraIdle() {
         currentLekuPoi = null;
-        setCurrentPositionLocation(latLng);
-        track(TrackEvents.didLocalizeByPoi);
+        setCurrentPositionLocationLatLng(getMap().getCameraPosition().target);
+        track(TrackEvents.simpleDidLocalizeByPoi);
     }
 
     @Override
-    public void onMapClick(LatLng latLng) {
-        currentLekuPoi = null;
-        setCurrentPositionLocation(latLng);
-        track(TrackEvents.simpleDidLocalizeByPoi);
+    public void onCameraMove() {
+        if (!ObjectsCompat.equals(getMap().getCameraPosition().target, GeoConverter.toLatLng(currentLocation))) {
+            moveRadius();
+        }
+    }
+
+    private void moveRadius() {
+        if (this.map != null && this.currentLocation != null) {
+            if (radiusCircle != null) {
+                radiusCircle.remove();
+                radiusCircle = null;
+            }
+            radiusCircle = this.map.addCircle(getRadiusCircle(getMap().getCameraPosition().target, viewModel.getRadius()));
+        }
     }
 
     @Override
@@ -367,12 +378,6 @@ public class LocationPickerActivity extends AppCompatActivity
     public void showLocations(List<Address> addresses) {
         if (addresses != null) {
             adapter.setItems(addresses);
-//            if (hasWiderZoom) {
-//                viewModel.setSearchText("");
-//            }
-//            if (addresses.size() == 1) {
-//                setNewLocation(addresses.get(0));
-//            }
         }
     }
 
@@ -399,8 +404,8 @@ public class LocationPickerActivity extends AppCompatActivity
 
     @Override
     public void willGetLocationInfo(LatLng latLng) {
-        viewModel.setSelectedLocationVisibility(View.VISIBLE);
-        viewModel.setCoordinatesInfo(latLng);
+//        viewModel.setSelectedLocationVisibility(View.VISIBLE);
+//        viewModel.setCoordinatesInfo(latLng);
     }
 
     @Override
@@ -512,39 +517,14 @@ public class LocationPickerActivity extends AppCompatActivity
         isLocationInformedFromBundle = true;
     }
 
-    private void setNewMapMarker(LatLng latLng) {
+    private void animateCamera(LatLng latLng) {
         if (map != null) {
-            if (currentMarker != null) {
-                currentMarker.remove();
-            }
             CameraPosition cameraPosition =
                     new CameraPosition.Builder().target(latLng)
                             .zoom(getDefaultZoom())
                             .build();
             hasWiderZoom = false;
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            currentMarker = addMarker(latLng);
-            map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-                @Override
-                public void onMarkerDragStart(Marker marker) {
-
-                }
-
-                @Override
-                public void onMarkerDrag(Marker marker) {
-                }
-
-                @Override
-                public void onMarkerDragEnd(Marker marker) {
-                    if (currentLocation == null) {
-                        currentLocation = new Location(getString(R.string.network_resource));
-                    }
-                    currentLekuPoi = null;
-                    currentLocation.setLongitude(marker.getPosition().longitude);
-                    currentLocation.setLatitude(marker.getPosition().latitude);
-                    setCurrentPositionLocation(currentLocation);
-                }
-            });
         }
     }
 
@@ -595,8 +575,8 @@ public class LocationPickerActivity extends AppCompatActivity
     private void setDefaultMapSettings() {
         if (map != null) {
             map.setMapType(MAP_TYPE_NORMAL);
-            map.setOnMapLongClickListener(this);
-            map.setOnMapClickListener(this);
+            map.setOnCameraIdleListener(this);
+            map.setOnCameraMoveListener(this);
             map.getUiSettings().setCompassEnabled(false);
             map.getUiSettings().setMyLocationButtonEnabled(true);
             map.getUiSettings().setMapToolbarEnabled(false);
@@ -614,17 +594,17 @@ public class LocationPickerActivity extends AppCompatActivity
 
     private void setCurrentPositionLocation(@NonNull Location location) {
         LatLng point = GeoConverter.toLatLng(location);
-        setNewMapMarker(point);
+        animateCamera(point);
         geocoderPresenter.getInfoFromLocation(point);
     }
 
-    private void setCurrentPositionLocation(LatLng latLng) {
+    private void setCurrentPositionLocationLatLng(LatLng latLng) {
         if (currentLocation == null) {
             currentLocation = new Location(getString(R.string.network_resource));
         }
         currentLocation.setLatitude(latLng.latitude);
         currentLocation.setLongitude(latLng.longitude);
-        setCurrentPositionLocation(currentLocation);
+        geocoderPresenter.getInfoFromLocation(GeoConverter.toLatLng(currentLocation));
     }
 
     private void setPois() {
@@ -700,7 +680,6 @@ public class LocationPickerActivity extends AppCompatActivity
 
         currentLocation.setLatitude(address.getLatitude());
         currentLocation.setLongitude(address.getLongitude());
-        setNewMapMarker(new LatLng(address.getLatitude(), address.getLongitude()));
         viewModel.setLocationInfo(address);
         viewModel.setSearchText("");
     }
