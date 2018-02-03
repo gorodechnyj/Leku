@@ -49,4 +49,12 @@ public class Intents {
         }
         return true;
     }
+
+    public static Intent getShareIntent(String title, String text) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        return Intent.createChooser(sendIntent, title);
+    }
 }
