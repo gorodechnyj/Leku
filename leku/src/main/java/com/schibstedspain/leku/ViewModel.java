@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.schibstedspain.leku.ui.search.AddressListAdapter;
-import com.schibstedspain.leku.utils.Intents;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +45,7 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
     private TextView tvAddressSecondaryLine, tvAddressPrimaryLine;
     private ProgressBar pgSearchProgress;
     private RecyclerView rvSearchResults;
-    private ImageView btnClearSearch, btnVoiceSearch;
+    private ImageView btnClearSearch;
     private FloatingActionButton btnMyLocation, btnAcceptLocation;
 
     private ViewGroup layoutRadius;
@@ -76,11 +75,6 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         if (btnClearSearch != null) {
             btnClearSearch.setOnClickListener(view -> {
                 setSearchText("");
-            });
-        }
-        if (btnVoiceSearch != null) {
-            btnVoiceSearch.setOnClickListener(v -> {
-                Intents.startVoiceRecognitionActivity(this.activity);
             });
         }
 
@@ -132,7 +126,6 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         tvAddressPrimaryLine = activity.findViewById(R.id.leku_address_primary_line);
         tvAddressSecondaryLine = activity.findViewById(R.id.leku_address_secondary_line);
         btnClearSearch = activity.findViewById(R.id.leku_control_clear);
-        btnVoiceSearch = activity.findViewById(R.id.leku_voice_search);
         btnMyLocation = activity.findViewById(R.id.leku_control_user_location);
         btnAcceptLocation = activity.findViewById(R.id.leku_control_accept);
         rvSearchResults = activity.findViewById(R.id.leku_suggestions_search_result);
@@ -241,9 +234,6 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         if (btnClearSearch != null) {
             btnClearSearch.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
-        if (btnVoiceSearch != null) {
-            btnVoiceSearch.setVisibility(visible ? View.GONE : View.VISIBLE);
-        }
     }
 
     public String getSearchText() {
@@ -254,17 +244,17 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         }
     }
 
-    private void setSearchText(String text) {
-        if (edSearchView != null) {
-            edSearchView.setText(text);
-        }
-    }
-
     public void setSearchText(Address address) {
         if (edSearchView != null) {
             String text = interactor.getAddressString(address) + " ";
             edSearchView.setText(text);
             edSearchView.setSelection(text.length());
+        }
+    }
+
+    private void setSearchText(String text) {
+        if (edSearchView != null) {
+            edSearchView.setText(text);
         }
     }
 
@@ -355,9 +345,7 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
 
     @Override
     public void onAddressSelected(Address address) {
-//        this.selectedAddress = address;
         viewCallbacks.onSearchResultSelected(address);
-//        KeyboardUtil.hideKeyboard(this.activity);
     }
 
     public float getZoomForMap(int radius) {
