@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import io.reactivex.disposables.CompositeDisposable;
 import pl.charmas.android.reactivelocation2.ReactiveLocationProvider;
@@ -681,7 +680,13 @@ public class LocationPickerActivity extends AppCompatActivity
         currentLocation.setLatitude(address.getLatitude());
         currentLocation.setLongitude(address.getLongitude());
         viewModel.setLocationInfo(address);
-        viewModel.setSearchText("");
+        viewModel.setSearchText(address);
+        CameraPosition cameraPosition =
+                new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude()))
+                        .zoom(viewModel.getZoomForMap(viewModel.getRadius()))
+                        .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        viewModel.setResultListVisibility(View.GONE);
     }
 
     @Override

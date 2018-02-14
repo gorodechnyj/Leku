@@ -35,8 +35,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
 
-    private static final int DEFAULT_RADIUS = 200;
-
     // external dependencies
     private final LocationPickerActivity activity;
     private final LocationPickerContracts.View viewCallbacks;
@@ -112,7 +110,13 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(text -> {
                         if (!TextUtils.isEmpty(text)) {
-                            interactor.queryLocation(text);
+                            if (selectedAddress != null) {
+                                if (!TextUtils.equals(text.toString().trim(), interactor.getAddressString(selectedAddress))) {
+                                    interactor.queryLocation(text);
+                                }
+                            } else {
+                                interactor.queryLocation(text);
+                            }
                         }
                     }, e -> {
                         viewCallbacks.onSearchTextChanged("");
@@ -242,17 +246,25 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         }
     }
 
-    public void setSearchText(String text) {
-        if (edSearchView != null) {
-            edSearchView.setText(text);
-        }
-    }
-
     public String getSearchText() {
         if (edSearchView != null) {
             return edSearchView.getText().toString();
         } else {
             return "";
+        }
+    }
+
+    private void setSearchText(String text) {
+        if (edSearchView != null) {
+            edSearchView.setText(text);
+        }
+    }
+
+    public void setSearchText(Address address) {
+        if (edSearchView != null) {
+            String text = interactor.getAddressString(address) + " ";
+            edSearchView.setText(text);
+            edSearchView.setSelection(text.length());
         }
     }
 
@@ -337,16 +349,15 @@ public class ViewModel implements AddressListAdapter.OnAddressSelectedListener {
         return this.selectedAddress;
     }
 
-    @Override
-    public void onAddressSelected(Address address) {
-        this.selectedAddress = address;
-        viewCallbacks.onSearchResultSelected(address);
-        setResultListVisibility(View.GONE);
-        KeyboardUtil.hideKeyboard(this.activity);
-    }
-
     public void setSelectedAddress(Address selectedAddress) {
         this.selectedAddress = selectedAddress;
+    }
+
+    @Override
+    public void onAddressSelected(Address address) {
+//        this.selectedAddress = address;
+        viewCallbacks.onSearchResultSelected(address);
+//        KeyboardUtil.hideKeyboard(this.activity);
     }
 
     public float getZoomForMap(int radius) {

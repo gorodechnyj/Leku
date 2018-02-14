@@ -18,6 +18,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private final List<Address> items;
     private final AddressItemHolder.Factory itemFactory;
+    private OnAddressSelectedListener addressSelectedListener;
 
     public AddressListAdapter(@NonNull Context context) {
         this.items = new ArrayList<>();
@@ -69,13 +70,11 @@ public class AddressListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    public interface OnAddressSelectedListener {
-        void onAddressSelected(Address address);
-    }
-
-    private OnAddressSelectedListener addressSelectedListener;
-
     public void setOnAddressSelectedListener(OnAddressSelectedListener addressSelectedListener) {
         this.addressSelectedListener = addressSelectedListener;
+    }
+
+    public interface OnAddressSelectedListener {
+        void onAddressSelected(Address address);
     }
 }

@@ -31,6 +31,15 @@ public class LocationPickerInteractor implements LocationPickerContracts.Interac
         }
     }
 
+    @Override
+    public void queryLocation(CharSequence text) {
+        if (searchZone != null && !searchZone.isEmpty()) {
+            getLocationFromZone(text.toString(), searchZone);
+        } else {
+            getLocationFromDefaultZone(text.toString());
+        }
+    }
+
     public void getLocationFromZone(String query, String zoneKey) {
         Locale locale = new Locale(zoneKey);
         if (CountryLocaleRect.getLowerLeftFromZone(locale) != null) {
@@ -38,15 +47,6 @@ public class LocationPickerInteractor implements LocationPickerContracts.Interac
                     CountryLocaleRect.getUpperRightFromZone(locale));
         } else {
             geocoderPresenter.getFromLocationName(query);
-        }
-    }
-
-    @Override
-    public void queryLocation(CharSequence text) {
-        if (searchZone != null && !searchZone.isEmpty()) {
-            getLocationFromZone(text.toString(), searchZone);
-        } else {
-            getLocationFromDefaultZone(text.toString());
         }
     }
 
